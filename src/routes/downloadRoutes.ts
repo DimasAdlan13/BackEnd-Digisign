@@ -6,8 +6,6 @@ import { checkSync } from "../controllers/downloadController";
 
 const router = express.Router();
 
-
-
 /**
  * @swagger
  * /api/media/sync:

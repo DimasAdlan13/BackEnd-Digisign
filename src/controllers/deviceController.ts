@@ -19,7 +19,7 @@ export const registerDevice = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error in registerDevice:", error);
     
-    // Handle specific errors
+    
     if (error instanceof Error) {
       if (error.message === "Outlet not found") {
         return res.status(404).json({ 

@@ -13,7 +13,7 @@ const options = {
       { url: "http://localhost:5000" }
     ]
   },
-  apis: ["./src/routes/*.ts"], // Path ke file yang ada JSDoc
+  apis: ["./src/routes/*.ts"], 
 };
 
 export const swaggerSpec = swaggerJSDoc(options);
