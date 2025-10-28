@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model device {
+  id                 Int          @id @default(autoincrement())
+  device_imei        String       @unique(map: "device_device_number_key") @db.VarChar(30)
+  outlet_id          Int
+  device_name        String       @db.VarChar(100)
+  device_orientation String?      @default("landscape") @db.VarChar(20)
+  online             Boolean?
+  storage_capacity   BigInt?
+  last_seen          DateTime?    @db.Timestamp(6)
+  created_at         DateTime?    @default(now()) @db.Timestamp(6)
+  outlet             outlet       @relation(fields: [outlet_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  log_device         log_device[]
+  schedule           schedule[]
+}
+
+model log_device {
+  id                   Int       @id @default(autoincrement())
+  device_id            Int
+  log_type             String    @db.VarChar(20)
+  log_message          String
+  file_size_downloaded BigInt?   @default(0)
+  created_at           DateTime? @default(now()) @db.Timestamp(6)
+  device               device    @relation(fields: [device_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model media {
+  id                Int        @id @default(autoincrement())
+  media_name        String     @db.VarChar(100)
+  title             String?    @db.VarChar(200)
+  media_type        String?    @db.VarChar(10)
+  duration          Int?
+  remote_url        String     @db.VarChar(500)
+  media_orientation String?    @default("landscape") @db.VarChar(20)
+  created_at        DateTime?  @default(now()) @db.Timestamp(6)
+  updated_at        DateTime?  @default(now()) @db.Timestamp(6)
+  media_active      Boolean?   @default(true)
+  update_flag       Boolean?   @default(false)
+  schedule          schedule[]
+}
+
+model outlet {
+  id          Int      @id @default(autoincrement())
+  outlet_name String   @db.VarChar(100)
+  address     String?
+  device      device[]
+}
+
+model schedule {
+  id              Int       @id @default(autoincrement())
+  device_id       Int
+  media_id        Int
+  start_at        DateTime  @db.Timestamp(6)
+  end_at          DateTime  @db.Timestamp(6)
+  display_order   Int?      @default(1)
+  schedule_active Boolean?  @default(true)
+  downloaded_at   DateTime? @db.Timestamp(6)
+  duration_show   Int?
+  update_flag     Boolean?  @default(false)
+  device          device    @relation(fields: [device_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  media           media     @relation(fields: [media_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
